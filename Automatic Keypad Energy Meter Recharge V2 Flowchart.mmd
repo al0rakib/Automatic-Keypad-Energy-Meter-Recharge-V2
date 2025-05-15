@@ -1,0 +1,42 @@
+
+graph TD
+    A["User Input via App (MIT App Inventor)"]
+    A --> B["Send 5-digit code via HTTP GET to ESP8266"]
+
+    B --> C["ESP8266 Web Server"]
+    C --> D["Parse 'code' parameter"]
+    D --> E["For each digit → Grid Mapping"]
+    E --> F["Convert to (X, Y) step positions"]
+
+    F --> G["Move Stepper X (via L298N)"]
+    F --> H["Move Stepper Y (via L298N)"]
+    G --> I["Wait until both axes reach target"]
+    H --> I
+
+    I --> J["Activate Servo Motor (press tap)"]
+    J --> K["Return to up position"]
+
+    K --> L["Save last (X, Y) position"]
+    L --> M{"More digits?"}
+    M -- Yes --> E
+    M -- No --> N["Task complete: Return or Reset"]
+
+    subgraph "Motors & Actuators"
+        G
+        H
+        J
+    end
+
+    subgraph "Control System"
+        C
+        D
+        E
+        F
+        I
+        L
+        M
+    end
+
+    subgraph "Input Device"
+        A
+    end
